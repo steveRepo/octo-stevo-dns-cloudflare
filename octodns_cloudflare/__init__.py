@@ -851,6 +851,14 @@ class CloudflareProvider(BaseProvider):
             self._try_request('POST', path, data=content)
 
     def _apply_Update(self, change):
+        # Extract the type of the record from the change object
+        record_type = change.new._type
+
+        # Check if the record type is SOA or NS, and skip processing if it is
+        if record_type in ['SOA', 'NS']:
+            return
+            
+        # Continue with original function flow
         zone = change.new.zone
         zone_id = self.zones[zone.name]
         hostname = zone.hostname_from_fqdn(change.new.fqdn[:-1])
